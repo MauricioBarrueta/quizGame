@@ -1,0 +1,39 @@
+<div *ngIf="!isLastQuestion" class="min-w-sm max-w-2xl h-full relative p-5 bg-[var(--flame)] border border-white rounded-lg shadow-3d cursor-default text-center text-white">
+  <p class="text-base sm:text-base lg:text-2xl font-black tracking-normal leading-normal mb-2" [innerHTML]="(questionIndex + 1) + '. ' + indivQuestion.question + ' <span class=\'relative -top-[2px] text-xl text-shadow-3d\'>🤔</span>'"></p>    
+
+  <div class="w-full h-full flex justify-center items-center py-1">
+    <p class="text-xs mr-6 text-[var(--chinese-silver)]" [innerHTML]="indivQuestion.category"></p>
+    @for (star of [1, 2, 3]; track $index) { <!--? [1, 2, 3] representa las 3 dificultades -->
+      <i class="fa-star text-xs ml-2" [ngClass]="$index < difficultyIcon(indivQuestion.difficulty) ? 'fa-solid text-[#FFD700]' : 'fa-regular text-[var(--chinese-silver)]'"></i>      
+    }
+  </div>        
+
+  <p class="text-base sm:text-base lg:text-xl font-black leading-8 tracking-wider text-shadow-3d py-2 my-1 border-t-1 border-dashed">Elige la respuesta que creas correcta:</p>   
+  <div class="grid grid-cols-2 gap-4 justify-center">   
+    @for (answer of shuffleAnswers; track $index) { 
+      <button (click)="onAnswerSelected(answer)" [disabled]="alreadyAnswered(questionIndex)"class="min-h-18 max-h-auto text-sm font-black text-[var(--jet)] bg-white hover:bg-gray-200 py-2 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet-light)] rounded cursor-pointer disabled:bg-[#F5F5F5] hover:disabled:bg-[#F5F5F5] disabled:text-gray-400 disabled:cursor-default disabled:shadow-xl transition-all duration-100 ease-linear" 
+        [ngClass]="answer === indivQuestion.correct_answer ? 'disabled:border-[#2e7d32]' : 'disabled:border-[#b71c1c]'" [innerHTML]="answer"></button>
+    }    
+  </div>
+
+  <div class="flex justify-center flex-wrap py-5 pt-3">
+    <p class="w-full mb-3 text-xs text-[var(--chinese-silver)] tracking-widest" [ngClass]="alreadyAnswered(questionIndex) ? 'visible' : 'invisible'">Respondida &#xf058;</p>
+    <button (click)="prevQuestion()" [disabled]="questionIndex == 0" [ngClass]="alreadyAnswered(questionIndex) && questionIndex === questions$.results.length - 1 ? '!bg-white text-[var(--jet)] hover:!bg-[var(--jet-light)] hover:!text-white' : ''" class="flex items-center bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 mx-3 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] disabled:bg-[#5c5c5c] hover:disabled:bg-[#5c5c5c] hover:disabled:border-[var(--jet-dark)] disabled:text-[#b0b0b0] disabled:cursor-default rounded-lg cursor-pointer transition-all duration-200 ease-in-out"
+      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false"><i class="fa-solid fa-caret-left one-time-animation mr-3 disabled:text-gray-500" [ngClass]="mouseEnter && questionIndex > 0 ? 'fa-shake' : ''"></i>Anterior</button>
+    
+    <button (click)="nextQuestion()" [disabled]="questionIndex === questions$.results.length - 1" [ngClass]="alreadyAnswered(questionIndex) && questionIndex !== questions$.results.length - 1 ? '!bg-white text-[var(--jet)] hover:!bg-[var(--jet-light)] hover:!text-white' : ''" class="flex items-center bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 mx-3 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] disabled:bg-[#5c5c5c] hover:disabled:bg-[#5c5c5c] hover:disabled:border-[var(--jet-dark)] disabled:text-[#b0b0b0] disabled:cursor-default rounded-lg cursor-pointer transition-all duration-200 ease-in-out"
+      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">Siguiente <i class="fa-solid fa-caret-right one-time-animation ml-3 disabled:text-gray-500" [ngClass]="mouseEnter && questionIndex >= 0 ? 'fa-shake' : ''"></i></button>
+  </div>
+  
+  <div class="w-full h-1 bg-white rounded-full border text-[var(--chinese-silver)]">    
+    <div class="h-0.5 bg-[#2e7d32] rounded-full transition-all duration-300 ease-in-out" [style.width.%]="progressBar"></div>
+  </div>
+  <p class="text-xs pt-2 mt-1 text-[var(--chinese-silver)]">Pregunta {{questionIndex + 1}} de {{questions$.results.length}}</p>  
+  
+  <a class="emoji group absolute bottom-0 left-0 p-2 text-shadow-3d cursor-pointer opacity-75" (click)="exitGame = true">
+    🚪<span class="emoji inline-block ml-1 group-hover:-translate-x-3.5 transition-all duration-500 ease-in-out">🏃‍♂️</span>
+  </a>  
+</div>
+
+<app-score *ngIf="isLastQuestion" [userScore]="score"></app-score>
+<app-confirm-modal *ngIf="exitGame" (confirm)="confirmExitGame" (cancel)="cancelExitGame"></app-confirm-modal>

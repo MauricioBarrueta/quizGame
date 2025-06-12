@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+@use "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');
+
+* { font-family: "Cascadia Mono", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", FontAwesome; }
+
+.text-shadow-3d { text-shadow: 2px 4px 0 rgba(26, 28, 26, 1) } .shadow-3d { box-shadow: 0 4px 6px rgba(0, 0, 0, 1) }
+.drop-3d { filter: drop-shadow(0 0 1px rgba(0, 0, 0, .7)); }
+.one-time-animation { animation-iteration-count: 1; }
+
+:root {
+    /* Cobalt Blue */
+    --cobalt-blue: #0047ab;
+    /* Chinese Silver */
+    --chinese-silver: #cccccc;
+    /* Hunter Green */
+    --hunter-green: #3e5641;
+    --hunter-green-light: #5f7a62;
+    --hunter-green-dark: #2d4030;
+    --hunter-green-muted: #4a6a52;
+    /* Chestnut */
+    --chestnut: #a24936;
+    --chestnut-light: #be6553;
+    --chestnut-dark: #803a2a;
+    --chestnut-muted: #94503e;
+    /* Flame */
+    --flame: #d36135;
+    --flame-light: #e37c55;
+    --flame-dark: #b94f27;
+    --flame-muted: #c45c3d;
+    /* Jet */
+    --jet: #282b28;
+    --jet-light: #3f423f;
+    --jet-dark: #1a1c1a;
+    --jet-muted: #343734;
+    /* Cambridge Blue */
+    --cambridge-blue: #83bca9;
+    --cambridge-blue-light: #a0d3c0;
+    --cambridge-blue-dark: #679b8c;
+    --cambridge-blue-muted: #7bb0a0;
+}

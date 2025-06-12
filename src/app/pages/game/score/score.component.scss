@@ -1,0 +1,8 @@
+.general-score {
+    /* Borde */
+    &::before {
+        content: ''; 
+        width: 2px; position: absolute; top: 2em; bottom: 0.25rem; left: 50%; transform: translateX(-50%);
+        background-color: var(--chinese-silver); 
+    }
+}
