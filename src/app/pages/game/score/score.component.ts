@@ -1,42 +1,49 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Score } from './interface/score';
 import { CommonModule } from '@angular/common';
-
+import { ScoreService } from './service/score.service';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-score',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './score.component.html',
-  styleUrl: './score.component.scss' 
 })
 export class ScoreComponent implements OnInit {
   
-  @Input() userScore: Score[] = []
+  userScore: Score[] = []
 
-  isLoading: boolean = true
+  isLoading: boolean = true  
+  /* Carousel */
   showingDetails: boolean = false
-
   activeSlide: number = 0
   mouseEnter: boolean = false
 
-  constructor() {}
-
+  constructor(private scoreService: ScoreService, private router: Router) {}  
+ 
   ngOnInit(): void {
+    /* Para evitar que se acceda a la ruta sin antes haber jugado una partida */
+    if (this.scoreService.getScoreData().length === 0) {
+      this.router.navigate(['main-menu'])
+      return
+    }
+    this.userScore = this.scoreService.getScoreData()
+    
     setTimeout(() => {
       this.isLoading = false
-    }, 2000);
+    }, 3000);
   }
 
-  /* Para mostrar de manera resumida los resultados */
-  get totalCorrectAnswers(): number {
-    return this.userScore.filter(q => q.result).length;
+  /* Se obtiene el numero total de respuestas correctas e incorrectas */
+  get totalCorrectAnswers(): number {    
+    return this.userScore.filter(q => q.result).length
   }
 
   get totalWrongAnswers(): number {
-    return this.userScore.filter(q => !q.result).length;
+    return this.userScore.filter(q => !q.result).length
   }
 
-  /* Para navegar entre las pestañas al mostrar los detalles */
+  /* Navegación entre pestañas (índices) */
   nextSlide() {
     this.activeSlide < this.userScore.length - 1 ? this.activeSlide++ : this.activeSlide = 0  
   }

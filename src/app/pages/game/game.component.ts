@@ -1,18 +1,18 @@
-import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { GameService } from './service/game.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Questions } from './interface/questions';
-import { ScoreComponent } from "./score/score.component";
 import { Score } from './score/interface/score';
-import { ConfirmModalComponent } from "./confirm-modal/confirm-modal.component";
+import { ModalService } from '../../shared/modal/service/modal.service';
+import { ScoreService } from './score/service/score.service';
 
 @Component({
-  imports: [CommonModule, ScoreComponent, ConfirmModalComponent],
+  imports: [CommonModule],
   templateUrl: './game.component.html',
 })
-export class GameComponent implements OnInit, AfterViewInit {
+export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /* Parámetros */
   amount: number = 0; category: number = 0 
@@ -25,33 +25,68 @@ export class GameComponent implements OnInit, AfterViewInit {
 
   mouseEnter: boolean = false
 
-  //* Se inyecta el token (PLATFORM_ID) para saber si se está ejecutando en un navegador y no en un servidor externo (SSR)
-  constructor(private gameService: GameService, private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {
-    /* Se obtienen los parámetros ocultos en la URL */
-    const nav = this.router.getCurrentNavigation() //* Obtiene la navegación actual, incluyendo el estado (state)
-    const state = nav?.extras.state
-    if(state) {     
-      this.amount = state['amount'], this.category = state['category'], this.difficulty = state['difficulty'], this.type = state['type']
-    }
-  }  
+  //* Registra la función cada que se da clic en los botones 'atras' o 'adelante' del navegador
+  private popStateHandler: (() => void) | null = null
 
+  //* Se inyecta el token (PLATFORM_ID) para saber si se está ejecutando en un navegador y no en un servidor externo (SSR)
+  constructor(private gameService: GameService, private scoreService: ScoreService, private router: Router, @Inject(PLATFORM_ID) private platformId: Object, private confirmationModal: ModalService) {}  
+  
   ngOnInit(): void { 
-    //* Si es un servidor externo NO se hace la petición a la API
+    /* Verifica si se está ejecutando en el navegador y no en el servidor */
     if (isPlatformBrowser(this.platformId)) {
+      /* Comprueba el origen de los parámetros, si son de localStorage, state o valores predeterminados */
+      const savedParams = localStorage.getItem('params')
+      if (savedParams) {
+        const params = JSON.parse(savedParams)
+        this.amount = params.amount || 10; this.category = params.category || 0
+        this.difficulty = params.difficulty || ''; this.type = params.type || ''
+        localStorage.removeItem('params') //* Se borran del localStorage para evitar que se usen otra vez
+
+      } else if (history.state && Object.keys(history.state).length > 0) {
+        const state = history.state
+        this.amount = state.amount || 10; this.category = state.category || 0
+        this.difficulty = state.difficulty || ''; this.type = state.type || ''
+
+      } else {
+        this.amount = 10; this.category = 0
+        this.difficulty = ''; this.type = ''
+      }
       this.getQuestionsList()
-    }        
+    }
+
+    /* Detecta si se activó Google Translate */
+    const redirect = localStorage.getItem('redirectAfterTranslate') //* Valor en localStorage previamente creado en el service del traductor
+    if (redirect === 'true') {
+      localStorage.removeItem('redirectAfterTranslate') //* Se elimina de localStorage para asegurar que se inicialize solo una vez      
+      /* Para prevenir que cargue el traductor antes que el contenido de la ruta */
+      setTimeout(() => {
+        this.loadGoogleTranslate()
+      }, 300)
+    }
+
+    /* Para detectar cuando se da clic en los botones 'atras' o 'adelante' del navegador, mostrando el Modal de confirmación en vez de abandonar la página */
+    history.pushState(null, '', location.href) //* Se crea una copia de la página en el historial, esto previene la acción de retroceder o adelantar
+    this.popStateHandler = () => {
+      //* Se vuelve a crear otra entrada para reiniciar la acción de volver a atrás y así poder mostrar el mensaje de confirmación
+      history.pushState(null, '', location.href)
+      this.showConfirmModal()
+    }
+    window.addEventListener('popstate', this.popStateHandler) //? 'popstate' es el evento que se llama al dar clic en los botones del navegador
+  }
+
+  ngOnDestroy(): void {
+    /* Destruye el evento asegurándose de que solo funcione en este componente */
+    if (this.popStateHandler)
+      window.removeEventListener('popstate', this.popStateHandler)    
   }
 
   ngAfterViewInit(): void {
+    /* Mezcla las respuestas una vez que se ha obtenido la lista de preguntas */
     this.shuffleAnswers 
   }
 
-  /* Devuelve la lista de las preguntas de acuerdo a parámetros */
-  getQuestionsList() {
-    //* Valida si es una partida rápida o una partida personalizada
-    if(this.amount === 0 && !this.difficulty && !this.type && !this.category) {
-      this.amount = 10
-    } 
+  /* Obtiene la lista de preguntas de acuerdo a los parámetros obtenidos */
+  getQuestionsList() {    
     this.gameService.getParams(this.amount, this.category, this.difficulty, this.type)
       .pipe(       
         tap((res: Questions) => {
@@ -85,30 +120,31 @@ export class GameComponent implements OnInit, AfterViewInit {
     }
   }
 
-  //* Se crea una firma de índice (index signature) para guardar las respuestas mezcladas de cada pregunta
-  //? { [key: KeyType]: ValueType } En este caso, es un objeto con propiedades number, y cada una contiene un arreglo string[]
-  mixedAnswers: { [ index: number ]: string[] } = {} 
   /* Devuelve la lista de las respuestas de cada pregunta mezcladas de manera aleatoria */
+  //? Index Signature: { [key: KeyType]: ValueType } En este caso, es un objeto con propiedades number, y cada una contiene un arreglo string[]
+  mixedAnswers: { 
+    [index: number]: string[] 
+  } = {}   
   get shuffleAnswers(): string[] {
-    //* Valida si ya se han mezclado las respuestas de la pregunta actual, esto para evitar que se mezclen cada que se muestre la pregunta
+    //* Valida si ya se han mezclado las respuestas de la pregunta actual o no
     if (!this.mixedAnswers[this.questionIndex]) {
-      const q = this.indivQuestion
-      //* Se agregan a un solo array las respuestas incorrectas y la respuesta correcta
-      const answers = [...q.incorrect_answers, q.correct_answer] //? Se usa spread operator (...) para copiar los elementos del array de respuestas incorrectas en el nuevo 
-      this.mixedAnswers[this.questionIndex] = answers.sort(() => Math.random() - .5) //* Se mezclan las respuestas
+      const question = this.indivQuestion
+      //* Las respuestas incorrectas y correcta se agregan a un nuevo array
+      const answers = [...question.incorrect_answers, question.correct_answer] //? Se usa spread operator (...) para copiar los elementos del array de respuestas incorrectas en el nuevo 
+      this.mixedAnswers[this.questionIndex] = answers.sort(() => Math.random() - .5)
     }
     return this.mixedAnswers[this.questionIndex]
   } 
   
-  /* Obtiene la respuesta correcta para cada pregunta */
+  /* Obtiene la respuesta correcta de cada pregunta */
   getCorrectAnswer(selected: string): boolean {
     const correct = this.indivQuestion.correct_answer
     return selected === correct
   }
 
-  /* Almacena el resultado de cada pregunta respondida para posteriormente mostrarlo */
+  /* Almacena el resultado de cada pregunta y valida su estado (respondida/pendiente) */
   onAnswerSelected(answer: string) {    
-    //* Verifica si la pregunta ya fue respindida y previene que se duplique al ir guardando los resultados
+    //* Verifica si la pregunta ya fue respondida y evita duplicarla en el array
     const isAnswered = this.score.find(question => question.index === this.questionIndex) 
     if(!isAnswered) {
       this.score.push({
@@ -119,6 +155,11 @@ export class GameComponent implements OnInit, AfterViewInit {
         result: this.getCorrectAnswer(answer)
       });      
     }
+    /* Inyecta el array de resultados en el service del componente Score y redirecciona a la ruta para mostrar los resultados */
+    if(this.score.length === this.questions$.results?.length) {
+      this.scoreService.pushScoreData(this.score)
+      this.router.navigate(['game/user-score'], { replaceUrl: true }) //? replaceUrl previene que se redireccione nuevamente a /game
+    }
   }
 
   /* Verifica si la pregunta ya ha sido respondida y si es que ya existe en el arreglo de la puntuación */
@@ -127,31 +168,80 @@ export class GameComponent implements OnInit, AfterViewInit {
   }
 
   /* Verifica si la pregunta actual corresponde a la última */
-  get isLastQuestion(): boolean {    
+  get isLastQuestion(): boolean {        
     return this.score.length === this.questions$.results.length
   }
 
-  /* Para navegar entre las preguntas */
+  /* Navegación entre índices (preguntas) */
   nextQuestion() {
     if(this.questionIndex < this.questions$.results.length - 1) { this.questionIndex++ }
-    this.shuffleAnswers
+    this.shuffleAnswers      
   }
   prevQuestion() {
     if(this.questionIndex > 0) { this.questionIndex-- }
-    this.shuffleAnswers
+    this.shuffleAnswers      
   }
 
+  /* Muestra el progreso del juego mediante una barra, el % de progreso depende del total de índices (preguntas) */
   get progressBar(): number {
     return ((this.questionIndex + 1) / this.questions$.results.length) * 100
   }  
 
-  /* Para confirmar si se desea salir de la partida */  
-  exitGame: boolean = false
-  get confirmExitGame(): boolean {
-    this.router.navigate(['main-menu'])
-    return this.exitGame = false
+  /* Se mandan y asignan los valores al objeto y se muestra el Modal */  
+  showConfirmModal() {
+    this.confirmationModal.showModal({
+      icon: '⚠️',
+      title: '¿Estás seguro de que deseas salir?',
+      subtitle: 'Perderás todo tu progreso',
+      confirmText: 'Salir del juego',
+      cancelText: 'Permanecer',
+      onConfirm: () => this.exitGameAndReset()
+    });
   }
-  get cancelExitGame(): boolean {
-    return this.exitGame = false
+  
+  //* Google Translate *//
+  loadGoogleTranslate() { /* Para cargar el script una única vez */
+    if ((window as any).google?.translate?.TranslateElement) { //* Se verifica si ya se cargó el script
+      this.initGoogleTranslate()
+      return
+    }
+    /* Se define la función global que Google Translate espera recibir al cargar el script */
+    (window as any).googleTranslateElementInit = () => { this.initGoogleTranslate() }
+    //* Si no se a cargado se crea el elemento de Google Translate para agregarlo al body
+    if (!document.getElementById('google_translate_script')) {
+      const script = document.createElement('script')
+      script.id = 'google_translate_script'
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' /* Se asigna la función global */
+      document.body.appendChild(script)
+    }
+  }
+
+  /* Para activar el widget y asignar los idiomas que estarán disponibles */
+  initGoogleTranslate() {
+    new (window as any).google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'es,en',
+    }, 'google_translate_element')
+  }
+
+  /* Para desactivar el traductor y volver al idioma original del sitio */
+  destroyGoogleTranslate() {
+    //* Se establece 1 año como tiempo de expiración para la cookie que almacena la traducción
+    const expireDate = new Date()
+    expireDate.setFullYear(expireDate.getFullYear() + 1)
+
+    //* Se restablecen los valores originales de la cookie 'googtrans' y el valor almacenado en el localStorage, definido en el service del traductor
+    document.cookie = `googtrans=/en/en;path=/;domain=${window.location.hostname};expires=${expireDate.toUTCString()}`
+    localStorage.setItem('googtrans', '/en/en')
+    localStorage.removeItem('redirectAfterTranslate')
+    location.reload()
+  }
+
+  /* Verifica que después de haber redireccionado se restablezca el idioma y se destruyan los parámetros almacenados en localStorage */
+  exitGameAndReset() {
+    this.router.navigate(['main-menu']).then(() => {
+      this.destroyGoogleTranslate() 
+      localStorage.removeItem('params')
+    })
   }
 }

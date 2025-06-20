@@ -1,6 +1,6 @@
 <div class="max-w-xl mx-auto h-auto p-5 bg-[var(--flame)] border border-white rounded-lg cursor-default text-center text-white shadow-3d">
   <h1 class="text-3xl sm:text-3xl lg:text-4xl font-black tracking-widest text-shadow-3d">Desafío Quiz</h1>
-  <span class="emoji w-full block text-xl sm:text-xl lg:text-2xl border-b-1 border-dashed py-2 my-1 text-shadow-3d">💪🧠</span>
+  <span class="emoji w-full block text-xl sm:text-xl lg:text-3xl border-b-1 border-dashed py-2 pb-3 my-1 text-shadow-3d">💪🧠</span>
   
   <div class="w-full mb-2 py-1">
     <p class="text-lg sm:text-lg md:text-xl lg:text-2xl mb-2">Demuestra cuánto sabes sobre cultura general y cultura pop <span class="emoji text-shadow-3d">🧐</span></p>
@@ -9,12 +9,12 @@
 
   <div class="flex flex-row justify-center items-center py-2 gap-2">
     <a class="text-xs sm:text-xs md:text-sm lg:text-base flex-1 bg-[var(--jet)] hover:bg-[var(--jet-light)] font-bold py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" 
-      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false" [href]="['game']">
+      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false" (click)="showModal()">
       <i class="fa-solid fa-play one-time-animation mr-3" [ngClass]="mouseEnter ? 'fa-shake' : ''" ></i>Partida rápida
     </a>
     <p class="text-md px-2 whitespace-nowrap">o</p>
     <a class="text-xs sm:text-xs md:text-sm lg:text-base flex-1 text-[var(--jet)] bg-white hover:bg-[var(--jet-light)] py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] hover:text-white rounded-lg cursor-pointer transition-all duration-200 ease-in-out" 
-      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false" [href]="['main-menu/settings']">
+      (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false" [routerLink]="['/main-menu/settings']">
       <i class="fa-solid fa-screwdriver-wrench one-time-animation mr-3" [ngClass]="mouseEnter ? 'fa-shake' : ''" ></i>Personalizada
     </a>
   </div>

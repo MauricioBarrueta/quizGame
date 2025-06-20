@@ -13,7 +13,7 @@ export class GameService {
 
   getParams(amount: number, category: number, difficulty: string, type: string): Observable<Questions> {
     let params = new HttpParams()
-    //? Si no se cumple la condición, devuelve los parámetros actuales sin modificar
+    //* Si no se cumple la condición, devuelve los parámetros actuales sin modificar
       params = amount > 0 ? params.set('amount', `${amount}`) : params
       params = category > 0 ? params.set('category', `${category}`) : params
       params = difficulty !== '' ? params.set('difficulty', `${difficulty}`) : params
@@ -23,7 +23,6 @@ export class GameService {
     .pipe(
       map((res: Questions) => { return res }),
       catchError((error) => {
-        console.error('Error al obtener las preguntas:', error)
         return throwError(() => error)
       })
     )      

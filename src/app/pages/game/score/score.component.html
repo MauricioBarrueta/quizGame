@@ -1,7 +1,7 @@
 <!-- Loader -->
 <div *ngIf="isLoading; else results" class="min-w-sm max-w-md sm:max-w-sm lg:max-w-md h-[319px] flex items-center flex-col bg-[var(--flame)] border border-white rounded-lg shadow-3d cursor-default p-5">
     <p class="flex items-center justify-center text-base sm:text-base lg:text-xl text-white font-black leading-8 tracking-wider text-shadow-3d mb-3">
-        Calculando resultados... <span class="emoji inline-block animate-pulse text-base not-italic ml-2">⏳</span>
+        Procesando resultados...<span class="emoji inline-block animate-pulse text-base not-italic ml-2">🕒</span>
     </p>
     
     <div class="w-full h-full animate-pulse flex items-center space-x-4">
@@ -18,34 +18,34 @@
 
 <!-- Resumen -->
 <ng-template #results>
-    <div *ngIf="!showingDetails;" class="w-full min-w-sm max-w-md h-[319px] max-h-[319px] bg-[var(--flame)] p-5 border border-white rounded-lg shadow-3d cursor-default cursor-default text-center text-white">
+    <div *ngIf="!showingDetails;" class="w-full min-w-sm max-w-md max-h-[319px] bg-[var(--flame)] p-5 border border-white rounded-lg shadow-3d cursor-default cursor-default text-center text-white">
         <h5 class="text-lg sm:text-lg lg:text-2xl font-black text-center leading-8 tracking-wider text-shadow-3d mb-2 pb-2 border-b-1 border-dashed"><span class="emoji text-lg relative top-[-0.150em]">📊</span> Resumen</h5>
 
-        <div class="general-score w-full relative grid grid-cols-2 justify-center items-center mb-4">
-            <div class="h-32 flex flex-col">
+        <div class="general-score w-full relative grid grid-cols-2 justify-center items-center mt-2 mb-4">
+            <div class="h-32 flex flex-col ">
                 <p class="text-base sm:text-base lg:text-lg tracking-wider pb-1 flex-none">
-                    <span class="text-base text-[#2e7d32] mr-2"><span class="emoji text-shadow-3d">✅</span></span>Correctas
+                    <span class="text-base text-[#2e7d32] mr-2"><span class="emoji relative top-[-0.150em] text-sm text-shadow-3d">✅</span></span>Correctas
                 </p>
-                <span class="flex-grow flex items-center justify-center bg-white rounded-l-lg text-3xl font-black text-[#c0392b] py-2 px-4 border-b-4 border-[var(--jet-dark)]">{{ totalCorrectAnswers }}</span>
+                <span class="flex-grow flex items-center justify-center bg-white rounded-l-lg border-r-1 text-3xl sm:text-3xl lg:text-4xl font-black text-[#c0392b] py-2 px-4 border-b-4 border-[var(--jet-dark)]">{{ totalCorrectAnswers }}</span>
             </div>
             <div class="h-32 flex flex-col">
                 <p class="text-base sm:text-base lg:text-lg tracking-wider pb-1 flex-none">
-                    <span class="text-base text-[#b71c1c] mr-2"><span class="emoji text-shadow-3d">❌</span></span>Incorrectas
+                    <span class="text-base text-[#b71c1c] mr-2"><span class="emoji relative top-[-0.150em] text-sm text-shadow-3d">❌</span></span>Incorrectas
                 </p>
-                <span class="flex-grow flex items-center justify-center bg-white rounded-r-lg text-3xl font-black text-[#c0392b] py-2 px-4 border-b-4 border-[var(--jet-dark)]">{{ totalWrongAnswers }}</span>
+                <span class="flex-grow flex items-center justify-center bg-white rounded-r-lg text-3xl sm:text-3xl lg:text-4xl font-black text-[#c0392b] py-2 px-4 border-b-4 border-[var(--jet-dark)]">{{ totalWrongAnswers }}</span>
             </div>
         </div>
 
         <button (click)="showingDetails = true" type="submit" class="w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
-            Mostrar detalles<i class="fa-solid fa-caret-down one-time-animation ml-3" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
+            Mostrar detalles <i class="fa-solid fa-caret-down one-time-animation ml-2" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
         </button>
-        <p class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4"> O vuelve a la <a [href]="['main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-1 text-shadow-3d">🏠</span></p>
+        <p class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4"> O vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></p>
     </div>
 </ng-template>
 
 <!-- Detalles -->
 <div *ngIf="showingDetails" class="min:w-sm sm:w-lg lg:w-2xl  h-full bg-[var(--flame)] p-5 border border-white rounded-lg shadow-3d cursor-default text-white text-center">
-    <h5 class="text-lg xs:text-lg lg:text-2xl font-black leading-8 tracking-wider text-shadow-3d mb-2 pb-2 border-b-1 border-dashed"><span class="emoji text-lg">🔍</span> Resumen detallado</h5>
+    <h5 class="text-lg sm:text-lg lg:text-2xl font-black leading-8 tracking-wider text-shadow-3d mb-2 pb-2 border-b-1 border-dashed"><span class="emoji text-lg">🔍</span> Resumen detallado</h5>
 
     <div class="relative overflow-hidden my-1">
         <div class="relative h-auto flex items-center justify-center">
@@ -58,15 +58,15 @@
                     <div class="grid grid-cols-2 gap-4 justify-center py-2 mt-2">
                         <div class="flex flex-col">
                             <label class="mb-1 text-xs sm:text-xs lg:text-base tracking-wider mb-2" for="answer">
-                                <span class="emoji mr-2 text-shadow-3d">📌</span>Tu respuesta
+                                <span class="emoji mr-1 text-shadow-3d">📌</span> Tu respuesta
                             </label>
-                            <p id="answer" class="min-h-18 max-h-auto flex-grow flex items-center justify-center text-sm xs:text-sm lg:text-base font-medium text-[var(--jet)] bg-white py-2 pb-2.5 px-4 border-b-4 rounded" [innerHTML]="q.selectedAnswer" [ngClass]="q.selectedAnswer === q.correctAnswer ? 'border-[#2e7d32]' : 'border-[#b71c1c]'"></p>
+                            <p id="answer" class="min-h-18 max-h-auto flex-grow flex items-center justify-center text-sm xs:text-sm lg:text-base font-medium text-[var(--jet)] bg-white shadow-md py-2 pb-2.5 px-4 border-b-4 rounded" [innerHTML]="q.selectedAnswer" [ngClass]="q.selectedAnswer === q.correctAnswer ? 'border-[#2e7d32]' : 'border-[#b71c1c]'"></p>
                         </div>
                         <div class="flex flex-col">
                             <label class="mb-1 text-xs sm:text-xs lg:text-base tracking-wider mb-2" for="correct">
-                                <span class="emoji mr-2 text-shadow-3d">✅</span>Respuesta correcta
+                                <span class="emoji mr-1 text-shadow-3d">✅</span> Respuesta correcta
                             </label>
-                            <p id="correct" class="min-h-18 max-h-auto flex-grow flex items-center justify-center text-sm xs:text-sm lg:text-base font-medium text-[var(--jet)] bg-white py-2 pb-2.5 px-4 border-b-4 border-[#2e7d32] rounded" [innerHTML]="q.correctAnswer"></p>
+                            <p id="correct" class="min-h-18 max-h-auto flex-grow flex items-center justify-center text-sm xs:text-sm lg:text-base font-medium text-[var(--jet)] bg-white shadow-md py-2 pb-2.5 px-4 border-b-4 border-[#2e7d32] rounded" [innerHTML]="q.correctAnswer"></p>
                         </div>
                     </div>
 
@@ -77,15 +77,13 @@
                 </div>
             }
         </div>
-        <div class="flex justify-between items-center py-1">
+        <div class="flex justify-between items-center py-1 my-2">
             <button (click)="prevSlide()" class="px-4 bg-[var(--jet)] hover:bg-[var(--jet-light)] font-bold py-2 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
                 <i class="fa-solid fa-caret-left one-time-animation" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
             </button>
-            <div class="flex gap-2 justify-center items-center">
+            <div class="flex gap-2 justify-center items-center flex-wrap mx-4">
                 @for (q of userScore; track $index) {
-                    <button class="w-3 h-3 rounded-full cursor-pointer transition-all duration-100"
-                        [ngClass]="$index === activeSlide ? 'bg-[var(--jet)] hover:bg-[var(--jet-light)]' : 'bg-[var(--chinese-silver)] hover:bg-[#dddddd]'" (click)="activeSlide = $index">
-                    </button>
+                    <button class="w-3 h-3 rounded-full drop-3d cursor-pointer transition-all duration-100" [ngClass]="$index === activeSlide ? 'bg-[var(--jet)] hover:bg-[var(--jet-light)]' : 'bg-[var(--chinese-silver)] hover:bg-[#dddddd]'" (click)="activeSlide = $index"></button>
                 }
             </div>        
             <button (click)="nextSlide()" class="px-4 bg-[var(--jet)] hover:bg-[var(--jet-light)] font-bold py-2 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
@@ -95,7 +93,7 @@
     </div>
 
     <button (click)="showingDetails = false" type="submit" class="mt-1 w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] font-bold py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
-        Ocultar detalles<i class="fa-solid fa-caret-up one-time-animation relative top-0.5 ml-3" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
+        Ocultar detalles <i class="fa-solid fa-caret-up one-time-animation relative top-0.5 ml-2" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
     </button>
-    <div class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4">O vuelve a la <a [href]="['main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-1 text-shadow-3d">🏠</span></div>
+    <div class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4">O vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></div>
 </div>

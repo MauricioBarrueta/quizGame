@@ -15,13 +15,13 @@ import { ScoreComponent } from './game/score/score.component';
     MainComponent,
     MenuComponent,
     GameComponent,
-    ScoreComponent
+    // ScoreComponent
   ],
   exports: [
     MainComponent,
     MenuComponent,
     GameComponent,
-    ScoreComponent
+    // ScoreComponent
   ],
   providers: [
     provideHttpClient()
