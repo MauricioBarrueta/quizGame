@@ -3,3 +3,6 @@ De esta forma se evitan las peticiones externas desde el servidor y solo ejecuta
 
 - PLATFORM_ID es un token de Angular que dice dónde se está ejecutando el código
 - isPlatformBrowser() es una función que verifica si ese entorno es el navegador
+
+
+Además, por ser un proyecto Angular SSR (Angular universal), se agregó en el archivo server.ts la ruta por defecto en caso de que el URL sea '/', que en este caso es '/main-menu'
