@@ -2,7 +2,7 @@
 
 🇺🇸 Website developed with Angular and TypeScript, SCSS and primarily Tailwind CSS, published with Firebase Hosting, connected to the Open Trivia DB API, with automatic translation using Google Translate.
 
-🔗 https://github.com/MauricioBarrueta/quizGame.git
+🔗 https://quizgame-612a1.web.app/main-menu
 
 
 ![quiz](https://github.com/user-attachments/assets/662441d0-de56-4760-8fb5-a3198e968601)
