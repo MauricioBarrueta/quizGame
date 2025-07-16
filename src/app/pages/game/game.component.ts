@@ -224,23 +224,10 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 'google_translate_element')
   }
 
-  /* Para desactivar el traductor y volver al idioma original del sitio */
-  destroyGoogleTranslate() {
-    //* Se establece 1 año como tiempo de expiración para la cookie que almacena la traducción
-    const expireDate = new Date()
-    expireDate.setFullYear(expireDate.getFullYear() + 1)
-
-    //* Se restablecen los valores originales de la cookie 'googtrans' y el valor almacenado en el localStorage, definido en el service del traductor
-    document.cookie = `googtrans=/en/en;path=/;domain=${window.location.hostname};expires=${expireDate.toUTCString()}`
-    localStorage.setItem('googtrans', '/en/en')
-    localStorage.removeItem('redirectAfterTranslate')
-    location.reload()
-  }
-
   /* Verifica que después de haber redireccionado se restablezca el idioma y se destruyan los parámetros almacenados en localStorage */
   exitGameAndReset() {
     this.router.navigate(['main-menu']).then(() => {
-      this.destroyGoogleTranslate() 
+      this.gameService.destroyGoogleTranslate() 
       localStorage.removeItem('params')
     })
   }

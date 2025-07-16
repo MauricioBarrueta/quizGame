@@ -3,6 +3,7 @@ import { Score } from './interface/score';
 import { CommonModule } from '@angular/common';
 import { ScoreService } from './service/score.service';
 import { Router, RouterModule } from '@angular/router';
+import { GameService } from '../service/game.service';
 
 @Component({
   selector: 'app-score',
@@ -19,7 +20,7 @@ export class ScoreComponent implements OnInit {
   activeSlide: number = 0
   mouseEnter: boolean = false
 
-  constructor(private scoreService: ScoreService, private router: Router) {}  
+  constructor(private scoreService: ScoreService, private router: Router, private gameService: GameService) {}  
  
   ngOnInit(): void {
     /* Para evitar que se acceda a la ruta sin antes haber jugado una partida */
@@ -50,4 +51,11 @@ export class ScoreComponent implements OnInit {
   prevSlide() {
     this.activeSlide > 0 ? this.activeSlide-- : this.activeSlide = this.userScore.length - 1  
   }  
+
+  exitGameAndReset() {
+    this.router.navigate(['main-menu']).then(() => {
+      this.gameService.destroyGoogleTranslate() 
+      localStorage.removeItem('params')
+    })
+  }
 }

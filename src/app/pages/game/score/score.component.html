@@ -39,7 +39,7 @@
         <button (click)="showingDetails = true" type="submit" class="w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
             Mostrar detalles <i class="fa-solid fa-caret-down one-time-animation ml-2" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
         </button>
-        <p class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4"> O vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></p>
+        <p class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4"> O vuelve a la <a (click)="exitGameAndReset()" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></p>
     </div>
 </ng-template>
 
@@ -95,5 +95,5 @@
     <button (click)="showingDetails = false" type="submit" class="mt-1 w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] font-bold py-3 px-4 border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] rounded-lg cursor-pointer transition-all duration-200 ease-in-out" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">
         Ocultar detalles <i class="fa-solid fa-caret-up one-time-animation relative top-0.5 ml-2" [ngClass]="mouseEnter ? 'fa-shake' : ''"></i>
     </button>
-    <div class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4">O vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></div>
+    <div class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-4">O vuelve a la <a (click)="exitGameAndReset()" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></div>
 </div>
