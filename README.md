@@ -1,6 +1,6 @@
 🇲🇽 Sitio web desarrollado con Angular y TypeScript, SCSS y principalmente Tailwind CSS, publicado con Firebase Hosting, conectado a la API Open Trivia DB y con traducción automática mediante Google Translate.
 
-🇺🇸 Website developed with Angular and TypeScript, SCSS and primarily Tailwind CSS, published with Firebase Hosting, connected to the Open Trivia DB API, with automatic translation using Google Translate.
+🇺🇸 Website developed with Angular and TypeScript, using SCSS and primarily Tailwind CSS, deployed on Firebase Hosting, connected to the Open Trivia DB API, and featuring automatic translation via Google Translate.
 
 🔗 https://quizgame-612a1.web.app/main-menu
 
