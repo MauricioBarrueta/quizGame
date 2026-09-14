@@ -28,6 +28,18 @@ export class GameService {
     )      
   }
 
+  /* Algoritmo Fisher-Yates, usado para mezclar un array de manera uniforme */
+  shuffle<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+
+      /* Intercambia el elemento actual con el elemento aleatorio */
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+  }
+
   /* Para desactivar el traductor y volver al idioma original del sitio */
   destroyGoogleTranslate() {
     //* Se establece 1 año como tiempo de expiración para la cookie que almacena la traducción

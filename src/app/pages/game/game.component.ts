@@ -120,21 +120,23 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /* Devuelve la lista de las respuestas de cada pregunta mezcladas de manera aleatoria */
-  //? Index Signature: { [key: KeyType]: ValueType } En este caso, es un objeto con propiedades number, y cada una contiene un arreglo string[]
-  mixedAnswers: { 
-    [index: number]: string[] 
-  } = {}   
+  /* Almacena las respuestas mezcladas de cada pregunta */
+  //? Index Signature: { [key: KeyType]: ValueType } En este caso, es un objeto donde cada índice de tipo number contiene un arreglo de strings
+  mixedAnswers: { [index: number]: string[] } = {}   
+  
+  /* Devuelve las respuestas mezcladas de la pregunta actual */
   get shuffleAnswers(): string[] {
     //* Valida si ya se han mezclado las respuestas de la pregunta actual o no
     if (!this.mixedAnswers[this.questionIndex]) {
       const question = this.indivQuestion
       //* Las respuestas incorrectas y correcta se agregan a un nuevo array
       const answers = [...question.incorrect_answers, question.correct_answer] //? Se usa spread operator (...) para copiar los elementos del array de respuestas incorrectas en el nuevo 
-      this.mixedAnswers[this.questionIndex] = answers.sort(() => Math.random() - .5)
+
+      this.mixedAnswers[this.questionIndex] = this.gameService.shuffle(answers)
     }
+
     return this.mixedAnswers[this.questionIndex]
-  } 
+  }   
   
   /* Obtiene la respuesta correcta de cada pregunta */
   getCorrectAnswer(selected: string): boolean {
