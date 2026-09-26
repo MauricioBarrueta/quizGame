@@ -1,13 +1,9 @@
-<div id="google_translate_element" style="display: none;"></div> <!-- Google Translate -->
-<main class="relative h-screen w-screen p-4 bg-gradient-to-b from-[var(--jet)] via-[var(--jet-light)] to-[var(--jet-dark)] select-none">
-    <div class="absolute inset-0 z-0 pointer-events-none">
-        <span class="w-full h-2 absolute top-15 bg-[var(--jet-light)]"></span>
-        <span class="w-full h-2 absolute bottom-15 bg-[var(--jet-light)]"></span>
-        <span class="h-full w-2 absolute left-15  bg-[var(--jet-light)]"></span>
-        <span class="h-full w-2 absolute right-15 bg-[var(--jet-light)]"></span>
-    </div>
+<div id="google_translate_element" class="hidden"></div> <!-- Google Translate -->
+
+<main id="main" class="relative h-screen w-screen p-4 !bg-[var(--jet-dark)]">    
     <div class="relative z-10 flex h-full w-full items-center justify-center">
         <router-outlet></router-outlet>
     </div>
+
     <app-modal></app-modal>
 </main>

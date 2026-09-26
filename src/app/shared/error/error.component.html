@@ -1,9 +1,9 @@
-<div class="w-auto sm:w-auto lg:w-lg p-5 bg-[var(--flame)] border border-white rounded-lg cursor-default text-center text-white shadow-3d">
-    <h1 class="emoji text-6xl text-shadow-3d py-2">❗🤕</h1>
-    <p class="mt-5 mb-2 text-lg lg:text-2xl font-normal">Ha ocurrido un error inesperado</p>
-    <p class="mb-5 text-sm lg:text-lg text-[var(--chinese-silver)]">Por favor, inténtalo más tarde <span class="emoji relative top-[-0.150em] text-sm text-shadow-3d">🔃</span></p>
+<div class="p-4 w-full max-w-lg bg-[var(--flame)] border border-[var(--jet)]/50 rounded-lg cursor-default text-center text-white shadow-3d">
+    <h1 class="emoji w-14 h-14 text-center text-5xl text-shadow-3d mx-auto">⚠️</h1>
+    <p class="text-base md:text-xl font-bold tracking-wide text-shadow-3d mb-4 pt-4 md:pt-5">No se encontró la página</p>
+    <p class="text-base/7 md:text-lg/8 tracking-wider whitespace-pre-wrap text-[var(--chinese-silver)]">La página que buscas no existe o no está disponible</p>
 
-    <p class="w-full text-xs lg:text-sm font-medium text-center tracking-wider mt-8">
-        Vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-3 text-shadow-3d">🏠</span>
+    <p class="w-full flex items-center justify-center gap-2 text-xs font-medium text-center tracking-wider text-white mt-6 md:mt-8">
+        Volver al <a [routerLink]="['/main-menu']" class="text-[var(--oceanic-teal)] font-bold hover:underline" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">inicio</a><span class="emoji relative text-[10px] text-shadow-3d one-time-animation" [ngClass]="mouseEnter ? 'fa-jello' : ''">◀️</span>
     </p>
 </div>

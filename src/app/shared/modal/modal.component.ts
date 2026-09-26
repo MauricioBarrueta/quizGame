@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ModalService } from './service/modal.service';
 import { Modal } from './interface/modal';
 import { CommonModule } from '@angular/common';
@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
 })
 export class ModalComponent implements OnInit {
 
-  constructor(private modalService: ModalService) {}
+  constructor(private modalService: ModalService, private cdr: ChangeDetectorRef) {}
 
   mouseEnter: boolean = false
-  isVisible = false
+  isVisible: boolean = false
   
   //* Se inicializa la interface para evitar errores por 'undefined'
   modalData: Modal = {
@@ -28,16 +28,25 @@ export class ModalComponent implements OnInit {
     this.modalService.modalData$.subscribe(data => {
       this.modalData = data
       this.isVisible = true
+
+      /* Fuerza la detección de cambios para actualizar la vista al recibir el modal */
+      this.cdr.detectChanges() 
     })
+  }
+
+  closeModal() {
+    this.isVisible = false
+    this.cdr.detectChanges()
   }
 
   /* Se asignan las acciones de los botones del Modal */
   confirm() {
-    this.modalData.onConfirm()
-    this.isVisible = false
+    this.closeModal()
+    this.modalData.onConfirm()    
   }
+
   cancel() {
-    this.modalData.onCancel?.()
-    this.isVisible = false
+    this.closeModal()
+    this.modalData.onCancel?.()    
   }
 }

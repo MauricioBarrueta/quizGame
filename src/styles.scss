@@ -6,7 +6,8 @@
 .text-shadow-3d { text-shadow: 2px 4px 0 rgba(26, 28, 26, 1) } .shadow-3d { box-shadow: 0 4px 6px rgba(0, 0, 0, 1) } 
 .outline-shadow { text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; } 
 .drop-3d { filter: drop-shadow(2px 4px 0 rgb(26, 28, 26)) }
-.one-time-animation { animation-iteration-count: 1; }
+.one-time-animation { animation-iteration-count: 1; animation-fill-mode: forwards; }
+.outline-text-shadow { text-shadow: -1px -1px 0 var(--jet-dark),1px -1px 0 var(--jet-dark),-1px 1px 0 var(--jet-dark),1px 1px 0 var(--jet-dark); }
 
 /* Se oculta el widget de Google Translate */
 .skiptranslate, #goog-gt-tt, .goog-te-banner-frame, .goog-te-balloon-frame { display: none !important; }
@@ -16,8 +17,10 @@ body { top: 0px !important; }
 :root {
     /* Cobalt Blue */
     --cobalt-blue: #0047ab;
+    --oceanic-teal: #164e63;
     /* Chinese Silver */
     --chinese-silver: #cccccc;
+    --dark-silver: #B0B0B0;
     /* Hunter Green */
     --hunter-green: #3e5641;
     --hunter-green-light: #5f7a62;
@@ -43,4 +46,26 @@ body { top: 0px !important; }
     --cambridge-blue-light: #a0d3c0;
     --cambridge-blue-dark: #679b8c;
     --cambridge-blue-muted: #7bb0a0;
+}
+
+#main, #loader { background: url('/main-bg.svg') no-repeat bottom / 100% auto; }
+
+/* Loader Dots Effect */
+.loader-dots {
+  .loader-dot {
+    display: inline-block;
+    animation: loader-blink 1.4s infinite;
+    
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+@keyframes loader-blink {
+  0%, 20% { opacity: 0; }
+  40%, 100% { opacity: 1; }
+}
+
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+    background-color: transparent !important;
+    box-shadow: none !important;
 }

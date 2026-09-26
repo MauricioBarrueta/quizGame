@@ -1,15 +1,16 @@
 import { AfterViewInit, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { GameService } from './service/game.service';
-import { catchError, tap, throwError } from 'rxjs';
+import { catchError, finalize, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Questions } from './interface/questions';
 import { Score } from './score/interface/score';
 import { ModalService } from '../../shared/modal/service/modal.service';
 import { ScoreService } from './score/service/score.service';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
-  imports: [CommonModule],
+  imports: [CommonModule, LoaderComponent],
   templateUrl: './game.component.html',
 })
 export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -25,52 +26,75 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   mouseEnter: boolean = false
 
+  isLoading: boolean = true
+  loaderText: string = 'Preparando la partida'
+
   //* Registra la función cada que se da clic en los botones 'atras' o 'adelante' del navegador
   private popStateHandler: (() => void) | null = null
 
   //* Se inyecta el token (PLATFORM_ID) para saber si se está ejecutando en un navegador y no en un servidor externo (SSR)
-  constructor(private gameService: GameService, private scoreService: ScoreService, private router: Router, @Inject(PLATFORM_ID) private platformId: Object, private confirmationModal: ModalService) {}  
+  constructor(private gameService: GameService, private scoreService: ScoreService, private router: Router, @Inject(PLATFORM_ID) private platformId: Object, private modalService: ModalService) {}  
   
   ngOnInit(): void { 
+
+    this.loaderText = 'Preparando la partida'
+
     /* Verifica si se está ejecutando en el navegador y no en el servidor */
     if (isPlatformBrowser(this.platformId)) {
       /* Comprueba el origen de los parámetros, si son de localStorage, state o valores predeterminados */
       const savedParams = localStorage.getItem('params')
+
       if (savedParams) {
         const params = JSON.parse(savedParams)
-        this.amount = params.amount || 10; this.category = params.category || 0
-        this.difficulty = params.difficulty || ''; this.type = params.type || ''
+
+        this.amount = params.amount || 10
+        this.category = params.category || 0
+        this.difficulty = params.difficulty || ''
+        this.type = params.type || ''
+
         localStorage.removeItem('params') //* Se borran del localStorage para evitar que se usen otra vez
 
       } else if (history.state && Object.keys(history.state).length > 0) {
         const state = history.state
-        this.amount = state.amount || 10; this.category = state.category || 0
-        this.difficulty = state.difficulty || ''; this.type = state.type || ''
+
+        this.amount = state.amount || 10
+        this.category = state.category || 0
+        this.difficulty = state.difficulty || ''
+        this.type = state.type || ''
 
       } else {
-        this.amount = 10; this.category = 0
-        this.difficulty = ''; this.type = ''
+        this.amount = 10
+        this.category = 0
+        this.difficulty = ''
+        this.type = ''
       }
-      this.getQuestionsList()
+      
+      setTimeout(() => {
+        this.getQuestionsList()
+      }, 2000)
     }
 
     /* Detecta si se activó Google Translate */
     const redirect = localStorage.getItem('redirectAfterTranslate') //* Valor en localStorage previamente creado en el service del traductor
+
     if (redirect === 'true') {
-      localStorage.removeItem('redirectAfterTranslate') //* Se elimina de localStorage para asegurar que se inicialize solo una vez      
+      localStorage.removeItem('redirectAfterTranslate') //* Se elimina de localStorage para asegurar que se inicialice solo una vez
+
       /* Para prevenir que cargue el traductor antes que el contenido de la ruta */
       setTimeout(() => {
         this.loadGoogleTranslate()
       }, 300)
     }
 
-    /* Para detectar cuando se da clic en los botones 'atras' o 'adelante' del navegador, mostrando el Modal de confirmación en vez de abandonar la página */
+    /* Para detectar cuando se da clic en los botones 'atrás' o 'adelante' del navegador, mostrando el Modal de confirmación en vez de abandonar la página */
     history.pushState(null, '', location.href) //* Se crea una copia de la página en el historial, esto previene la acción de retroceder o adelantar
+
     this.popStateHandler = () => {
       //* Se vuelve a crear otra entrada para reiniciar la acción de volver a atrás y así poder mostrar el mensaje de confirmación
       history.pushState(null, '', location.href)
       this.showConfirmModal()
     }
+
     window.addEventListener('popstate', this.popStateHandler) //? 'popstate' es el evento que se llama al dar clic en los botones del navegador
   }
 
@@ -85,20 +109,25 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.shuffleAnswers 
   }
 
-  /* Obtiene la lista de preguntas de acuerdo a los parámetros obtenidos */
-  getQuestionsList() {    
-    this.gameService.getParams(this.amount, this.category, this.difficulty, this.type)
-      .pipe(       
+  /* Obtiene la lista de preguntas de acuerdo a los parámetros obtenidos */  
+  getQuestionsList() {
+    this.isLoading = true
+
+    this.gameService.getQuizList(this.amount, this.category, this.difficulty, this.type)
+      .pipe(
         tap((res: Questions) => {
-          this.questions$ = res          
+          this.questions$ = res
         }),
-        catchError(error => {        
+        catchError(error => {
           return throwError(() => error)
+        }),
+        finalize(() => {
+          this.isLoading = false
         })
       )
-    .subscribe({
-      error: e => { console.error('Error al obtener las preguntas: ' + e) }
-    })
+      .subscribe({
+        error: e => { console.error('Error al obtener las preguntas: ' + e) }
+      })
   }
 
   /* Devuelve cada pregunta de manera individual de acuerdo a su posición (index) */
@@ -129,12 +158,9 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
     //* Valida si ya se han mezclado las respuestas de la pregunta actual o no
     if (!this.mixedAnswers[this.questionIndex]) {
       const question = this.indivQuestion
-      //* Las respuestas incorrectas y correcta se agregan a un nuevo array
       const answers = [...question.incorrect_answers, question.correct_answer] //? Se usa spread operator (...) para copiar los elementos del array de respuestas incorrectas en el nuevo 
-
       this.mixedAnswers[this.questionIndex] = this.gameService.shuffle(answers)
     }
-
     return this.mixedAnswers[this.questionIndex]
   }   
   
@@ -157,10 +183,13 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
         result: this.getCorrectAnswer(answer)
       });      
     }
+
     /* Inyecta el array de resultados en el service del componente Score y redirecciona a la ruta para mostrar los resultados */
     if(this.score.length === this.questions$.results?.length) {
-      this.scoreService.pushScoreData(this.score)
-      this.router.navigate(['game/user-score'], { replaceUrl: true }) //? replaceUrl previene que se redireccione nuevamente a /game
+      setTimeout(() => {
+        this.scoreService.pushScoreData(this.score)
+        this.router.navigate(['game/user-score'], { replaceUrl: true }) //? replaceUrl previene que se redireccione nuevamente a /game
+      }, 800);      
     }
   }
 
@@ -175,13 +204,23 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /* Navegación entre índices (preguntas) */
-  nextQuestion() {
-    if(this.questionIndex < this.questions$.results.length - 1) { this.questionIndex++ }
-    this.shuffleAnswers      
+  nextQuestion() {    
+    if (this.questionIndex >= this.questions$.results.length - 1) return
+    this.questionIndex++    
   }
-  prevQuestion() {
-    if(this.questionIndex > 0) { this.questionIndex-- }
-    this.shuffleAnswers      
+
+  prevQuestion() {      
+    if (this.questionIndex <= 0) return
+    this.questionIndex--     
+  }
+
+  /* Determinan el estado visual de los botones 'Anterior' y 'Siguiente' */
+  get prevAnswered(): boolean {
+    return this.questionIndex > 0 && this.alreadyAnswered(this.questionIndex - 1)
+  }
+
+  get nextAnswered(): boolean {
+    return this.questionIndex < this.questions$.results.length - 1 && this.alreadyAnswered(this.questionIndex)
   }
 
   /* Muestra el progreso del juego mediante una barra, el % de progreso depende del total de índices (preguntas) */
@@ -191,12 +230,12 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /* Se mandan y asignan los valores al objeto y se muestra el Modal */  
   showConfirmModal() {
-    this.confirmationModal.showModal({
-      icon: '⚠️',
-      title: '¿Estás seguro de que deseas salir?',
-      subtitle: 'Perderás todo tu progreso',
-      confirmText: 'Salir del juego',
-      cancelText: 'Permanecer',
+    this.modalService.showModal({
+      icon: '❓',
+      title: '¿Estás seguro de que deseas salir de la partida?',
+      subtitle: 'Se perderá todo tu progreso',
+      confirmText: 'Confirmar',
+      cancelText: 'Cancelar',
       onConfirm: () => this.exitGameAndReset()
     });
   }
@@ -232,5 +271,5 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
       this.gameService.destroyGoogleTranslate() 
       localStorage.removeItem('params')
     })
-  }
+  }  
 }

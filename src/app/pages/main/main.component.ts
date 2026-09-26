@@ -11,20 +11,20 @@ import { TranslatorService } from './service/translator.service';
 })
 export class MainComponent {
 
-  constructor(private router: Router, private confirmationModal: ModalService, private translatorService: TranslatorService) {}
+  constructor(private router: Router, private modalService: ModalService, private translatorService: TranslatorService) {}
 
   mouseEnter: boolean = false
 
   /* Se mandan y asignan los valores al objeto y se muestra el Modal */
   showModal() {
-    this.confirmationModal.showModal({
-      icon: '<img width="48" height="48" class="mx-auto drop-3d" alt="" src="/google-translate.svg">',      
+    this.modalService.showModal({
+      icon: '/google-translate.svg',      
       title: '¿Quieres traducir las preguntas al español?',
-      subtitle: 'Ten en cuenta que la traducción puede no ser muy precisa',
-      confirmText: 'Traducir preguntas',
+      subtitle: 'Ten en cuenta que la traducción puede contener algunos errores',
+      confirmText: 'Traducir',
       cancelText: 'Conservar en inglés',
       onConfirm: () => this.translatorService.enableTranslation('es'),
-      onCancel: () => this.router.navigate(['game'], { replaceUrl: true })
+      onCancel: () => { setTimeout(() => { this.router.navigate(['/game'], { replaceUrl: true }) })} /* Se asegura de redirigir una vez que se cierra el modal */
     })
   }
 }

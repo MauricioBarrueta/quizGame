@@ -18,7 +18,7 @@ export class MenuComponent implements OnInit {
 
   categories$: TriviaCategory[] = []
   /* Parámetros */
-  amount: number = 0; category: number = 0
+  amount: number = 10; category: number = 0
   difficulty: string = ''
   type: string = ''
 
@@ -30,13 +30,20 @@ export class MenuComponent implements OnInit {
     this.getCategories()  
   }
 
+   /* Controla la cantidad ingresada, impidiendo que sea mayor al límite */
+  updateQty(value: number) {
+    const qty = Math.max(5, Math.min(25, value))
+    this.amount = qty
+  }
+
   /* Se mandan los parámetros */  
   setParams() {
     const params = { amount: this.amount, category: this.category, difficulty: this.difficulty, type: this.type };
     //* Controla en cómo se almacenarán los parámetros, si se eligió traducir, se almacenan en localStorage, si no, se pasan como estados de navegación (state)
-    if (this.checked) {
+    if (this.checked) {      
       //? Guardarlos en localStorage evita que se borren al recargar la página tras activar Google Translate
       localStorage.setItem('params', JSON.stringify(params))
+
       this.translatorService.enableTranslation('es')
     } else {
       //? Los estados de navegación (NavigationExtras.state) sirven para pasar parámetros en la URL sin que sean visibles en esta

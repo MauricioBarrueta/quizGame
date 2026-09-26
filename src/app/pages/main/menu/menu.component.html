@@ -1,20 +1,23 @@
-<div class="w-full max-w-md p-5 bg-[var(--flame)] text-white border border-white rounded-lg shadow-3d cursor-default">
-    <h5 class="text-lg sm:text-lg lg:text-2xl font-black text-center leading-8 tracking-wider text-shadow-3d mb-2"><span class="emoji">🛠️</span> Partida personalizada</h5>  
-    <form class="w-full max-w-md space-y-4 border-t-1 border-dashed pt-2 mt-1" action="#">
+<div class="w-full max-w-lg p-4 bg-[var(--flame)] text-white border border-[var(--jet)]/50 rounded-lg shadow-3d cursor-default">
+    <h5 class="text-lg sm:text-lg lg:text-2xl font-black text-center leading-8 tracking-wider text-shadow-3d mb-2"><span class="emoji">🛠️</span> Personaliza tu partida</h5>  
+    
+    <form class="w-full space-y-4 border-t-2 border-dashed pt-2 mt-2" action="#">
         <div class="mb-2">
-            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="num-of-Q">Cantidad de preguntas:</label>
-            <input type="number" class="w-full h-[45px] text-sm lg:text-base text-[var(--jet)] appearance-none bg-white border border-b-4 border-[var(--jet-dark)] rounded py-2 px-3 leading-normal focus:outline-none focus:shadow-outline" id="num-of-Q" [(ngModel)]="amount" [ngModelOptions]="{standalone: true}" step="5" max="50" min="0">
+            <label class="block text-sm lg:text-base xl:text-lg mb-1" for="num-of-Q">Cantidad de preguntas</label>
+            <input type="text" inputmode="numeric" class="w-full h-[45px] text-sm lg:text-base text-[var(--jet)] bg-white border border-b-4 border-[var(--jet-dark)] rounded py-2 px-3 leading-normal focus:outline-none focus:shadow-outline" id="num-of-Q" [(ngModel)]="amount" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateQty(amount)" step="5" max="25" min="5" value="10" maxlength="2">
         </div>
+
         <div class="mb-2">
-            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="type-of-Q">Tipo de preguntas:</label>
+            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="type-of-Q">Tipo de preguntas</label>
             <select class="w-full h-[45px] text-sm lg:text-base text-[var(--jet)] bg-white border border-b-4 border-[var(--jet-dark)] hover:bg-gray-200 hover:border-[var(--jet-light)] rounded py-2 px-3 leading-normal cursor-pointer transition-all duration-100 ease-linear focus:outline-none focus:shadow-outline" id="type-of-Q" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
                 <option class="bg-white" value="" textContent="Aleatorias" selected>Aleatorias</option>
                 <option class="bg-white" value="multiple">Opción múltiple</option>
                 <option class="bg-white" value="boolean">Verdadero / Falso</option>
             </select>
         </div>
+
         <div class="mb-2">
-            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="cat-of-Q">Categoría:</label>
+            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="cat-of-Q">Categoría</label>
             <select class="w-full h-[45px] text-sm lg:text-base text-[var(--jet)] bg-white border border-b-4 border-[var(--jet-dark)] hover:bg-gray-200 hover:border-[var(--jet-light)] rounded py-2 px-3 leading-normal cursor-pointer transition-all duration-100 ease-linear focus:outline-none focus:shadow-outline" id="cat-of-Q" [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
                 <option value="0" [innerHTML]="'Cualquiera'" selected>Cualquiera</option>
                 @for (value of categories$; track value.id) {
@@ -22,8 +25,9 @@
                 }
             </select>
         </div>
+
         <div class="mb-2">
-            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="diff-of-Q">Dificultad:</label>
+            <label class="block text-sm sm:text-sm lg:text-base xl:text-lg mb-1" for="diff-of-Q">Dificultad</label>
             <select class="w-full h-[45px] text-sm lg:text-base text-[var(--jet)] bg-white border border-b-4 border-[var(--jet-dark)] hover:bg-gray-200 hover:border-[var(--jet-light)] rounded py-2 px-3 leading-normal cursor-pointer transition-all duration-100 ease-linear focus:outline-none focus:shadow-outline" id="diff-of-Q" [(ngModel)]="difficulty" [ngModelOptions]="{standalone: true}">
                 <option class="bg-white" value="" [innerHTML]="'Aleatoria'" selected>Aleatoria</option>
                 <option class="bg-white" value="easy">Fácil</option>
@@ -31,16 +35,20 @@
                 <option class="bg-white" value="hard">Difícil</option>
             </select>
         </div>
-        <div class="flex items-center flex-wrap mb-0 pt-1">
-            <label class="text-sm sm:text-sm lg:text-base xl:text-lg mr-3" for="lang-of-Q" >Traducir al español:</label>
+
+        <div class="flex items-center justify-center flex-wrap mb-0 pt-1">
+            <label class="text-sm sm:text-sm lg:text-base xl:text-lg mr-3" for="lang-of-Q" >Traducir</label>
             <input id="lang-of-Q" type="checkbox" value="" class="w-4 h-4 accent-[var(--jet-dark)] border-white rounded-lg focus:ring-[var(--jet-light)] focus:ring-2 hover:bg-gray-200 cursor-pointer transition-all duration-200 ease-linear"  [(ngModel)]="checked" [ngModelOptions]="{standalone: true}">
-            <span class="text-sm sm:text-sm lg:text-base xl:text-lg ml-3" [textContent]="checked ? 'Sí' : 'No'"></span>
-            <p class="w-full text-[10px] text-[var(--chinese-silver)] text-center tracking-wide mt-1" [ngClass]="checked ? 'visible' : 'invisible'" ><span class="emoji text-shadow-3d">ℹ️</span> Las preguntas y las respuestas se traducirán al español</p>
+            <span class="text-sm sm:text-sm lg:text-base xl:text-lg ml-3 font-bold" [textContent]="checked ? 'Sí' : 'No'"></span>
+
+            <p class="w-full text-[11px] text-[var(--chinese-silver)] text-center tracking-wide my-2 transition-all duration-200" [ngClass]="checked ? 'visible' : 'invisible'" >Las preguntas y respuestas se mostrarán en español</p>
         </div>
-        
-        <button (click)="setParams()" [disabled]="amount === 0 || amount === null" type="submit" class="w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 mt-3 rounded-lg cursor-pointer border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] disabled:bg-[#5c5c5c] hover:disabled:bg-[#5c5c5c] hover:disabled:border-[var(--jet-dark)] disabled:text-[#b0b0b0] disabled:cursor-default disabled:shadow-2xl transition-all duration-200 ease-in-out"
-            (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false"><i class="fa-solid fa-play one-time-animation mr-3 disabled:text-gray-500"  [ngClass]="mouseEnter && amount > 0 ? 'fa-shake' : ''" ></i>Iniciar
+
+        <button (click)="setParams()" [disabled]="amount === 0 || amount === null" type="submit" class="w-full bg-[var(--jet)] hover:bg-[var(--jet-light)] text-xs sm:text-xs md:text-sm lg:text-base font-bold py-3 px-4 rounded-lg cursor-pointer border-b-4 border-[var(--jet-dark)] hover:border-[var(--jet)] disabled:bg-[#5c5c5c] hover:disabled:bg-[#5c5c5c] hover:disabled:border-[var(--jet-dark)] disabled:text-[#b0b0b0] disabled:cursor-default disabled:shadow-2xl transition-all duration-200 ease-in-out"
+            (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false"><i class="fa-solid fa-play one-time-animation mr-3 disabled:text-gray-500"  [ngClass]="mouseEnter && amount > 0 ? 'fa-jello' : ''" ></i>Iniciar
         </button>
-        <p class="w-full text-xs font-medium text-center tracking-wider text-[var(--chinese-silver)] mt-1">O vuelve a la <a [routerLink]="['/main-menu']" class="text-[var(--cobalt-blue)] hover:underline">página principal</a><span class="emoji relative top-[-0.150em] ml-2 text-shadow-3d">🏠</span></p>
+        <p class="w-full flex items-center justify-center gap-2 text-xs font-medium text-center tracking-wider text-white mt-1">
+            Volver al <a [routerLink]="['/main-menu']" class="text-[var(--oceanic-teal)] font-bold hover:underline" (mouseenter)="mouseEnter = true" (mouseleave)="mouseEnter = false">inicio</a><span class="emoji relative text-[10px] text-shadow-3d one-time-animation" [ngClass]="mouseEnter ? 'fa-jello' : ''">◀️</span>
+        </p>
     </form>
 </div>

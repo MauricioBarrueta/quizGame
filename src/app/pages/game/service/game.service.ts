@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Questions } from '../interface/questions';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
@@ -9,23 +9,34 @@ import { environment } from '../../../../environments/environment.development';
 })
 export class GameService {
 
+  isReloadingSubject = new BehaviorSubject<boolean>(false)
+  isReloading$ = this.isReloadingSubject.asObservable()
+
   constructor(private http: HttpClient) { }
-
-  getParams(amount: number, category: number, difficulty: string, type: string): Observable<Questions> {
+  
+  getQuizList(amount: number, category: number, difficulty: string, type: string): Observable<Questions> {
     let params = new HttpParams()
-    //* Si no se cumple la condición, devuelve los parámetros actuales sin modificar
-      params = amount > 0 ? params.set('amount', `${amount}`) : params
-      params = category > 0 ? params.set('category', `${category}`) : params
-      params = difficulty !== '' ? params.set('difficulty', `${difficulty}`) : params
-      params = type !== '' ? params.set('type', `${type}`) : params
 
-    return this.http.get<Questions>(`${environment.url}api.php`, { params: params })
-    .pipe(
-      map((res: Questions) => { return res }),
-      catchError((error) => {
-        return throwError(() => error)
-      })
-    )      
+    //* Si no se cumple la condición, devuelve los parámetros actuales sin modificar
+    params = amount > 0 ? params.set('amount', `${amount}`) : params
+    params = category > 0 ? params.set('category', `${category}`) : params
+    params = difficulty !== '' ? params.set('difficulty', `${difficulty}`) : params
+    params = type !== '' ? params.set('type', `${type}`) : params
+
+    return this.http.get<Questions>(`${environment.url}api.php`, { params })
+      .pipe(
+        map((res: Questions) => ({
+          ...res,
+          results: res.results.map(question => ({
+            ...question,
+            /* Elimina los prefijos de las categorías para mostrar únicamente el nombre */
+            category: question.category.replace(/^(Entertainment|Science): /, '')
+          }))
+        })),
+        catchError((error) => {
+          return throwError(() => error)
+        })
+      )
   }
 
   /* Algoritmo Fisher-Yates, usado para mezclar un array de manera uniforme */
@@ -50,6 +61,21 @@ export class GameService {
     document.cookie = `googtrans=/en/en;path=/;domain=${window.location.hostname};expires=${expireDate.toUTCString()}`
     localStorage.setItem('googtrans', '/en/en')
     localStorage.removeItem('redirectAfterTranslate')
+
+    /* Muestra un loader para ocultar la recarga de la página */    
+    const loader = document.createElement('div')
+    loader.id = 'loader'
+    loader.className = 'fixed inset-0 z-[9999] flex items-center justify-center !bg-[var(--jet-dark)] cursor-default'
+    loader.innerHTML = `
+      <p class="w-full text-lg md:text-xl font-medium text-center tracking-wider text-white text-shadow-3d">
+        Saliendo de la partida
+        <span class="loader-dots">
+          <span class="loader-dot">.</span><span class="loader-dot">.</span><span class="loader-dot">.</span>
+        </span>
+      </p>`
+          
+    document.body.appendChild(loader)
+
     location.reload()
   }
 }

@@ -15,7 +15,11 @@ export class MenuService {
   getCategories(): Observable<TriviaCategory[]> {
     return this.http.get<Categories>(`${environment.url}api_category.php`)
       .pipe(
-        map((res: Categories) => { return res.trivia_categories })
+        map((res: Categories) => res.trivia_categories.map(category => ({
+          ...category,
+          /* Elimina el prefijo de las categorías */
+          name: category.name.replace(/^(Entertainment|Science): /, '')
+        })))
       )
   }
 }
