@@ -4,8 +4,7 @@
 
 🔗 https://quizgame-612a1.web.app/main-menu
 
-![quiz](https://github.com/user-attachments/assets/662441d0-de56-4760-8fb5-a3198e968601)
-
+<img width="1366" height="635" alt="quiz" src="https://github.com/user-attachments/assets/947e7fbc-b710-40cd-a969-15ebbfd73a23" />
 
 # TriviaGame
 
