@@ -30,10 +30,13 @@ export class MenuComponent implements OnInit {
     this.getCategories()  
   }
 
-   /* Controla la cantidad ingresada, impidiendo que sea mayor al límite */
-  updateQty(value: number) {
-    const qty = Math.max(5, Math.min(25, value))
-    this.amount = qty
+  /* Controla la cantidad ingresada, impidiendo que sea mayor al límite */  
+  updateQty(value: string | number) {
+    if (value === '' || Number(value) === 0) {
+      this.amount = 0
+      return
+    }
+    this.amount = Math.max(5, Math.min(25, Number(value)))
   }
 
   /* Se mandan los parámetros */  
